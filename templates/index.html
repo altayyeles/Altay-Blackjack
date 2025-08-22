@@ -1,30 +1,133 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr" data-theme="light">
 <head>
-    <meta charset="UTF-8">
-    <title>Altay BlackJack</title>
-    <link rel="stylesheet" href="../static/css/style.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{ app_name }}</title>
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#f9fbff">
+  <link rel="icon" href="/static/img/ui/icon-48.png" sizes="48x48" type="image/png">
+  <link rel="apple-touch-icon" href="/static/img/ui/icon-192.png" sizes="192x192">
+  <link rel="stylesheet" href="/static/css/style.css" />
 </head>
 <body>
-    <audio autoplay loop>
-        <source src="../static/sounds/casino.mp3" type="audio/mpeg">
-    </audio>
-    <div id="game">
-        <h1>Altay BlackJack</h1>
-        <div id="table"></div>
-        <div id="controls">
-            <button onclick="hit()">Hit</button>
-            <button onclick="stand()">Stand</button>
-            <button onclick="resetGame()">New Game</button>
-        </div>
-        <div id="chips">
-            <button onclick="bet(10)">₺10</button>
-            <button onclick="bet(50)">₺50</button>
-            <button onclick="bet(100)">₺100</button>
-        </div>
-        <div id="balance">Balance: ₺1000</div>
-        <div id="history"></div>
-    </div>
-    <script src="../static/js/game.js"></script>
+  <header class="topbar">
+    <div class="brand">🎴 Altay <strong>BlackJack</strong></div>
+    <nav class="actions">
+      <button id="btn-theme" title="Tema">🌓</button>
+      <button id="btn-settings" title="Kurallar & Kişiselleştirme">⚙️</button>
+      <a href="/history" class="btn" title="Geçmiş">📜 Geçmiş</a>
+      <button id="btn-audio" class="btn">🔈 Ses</button>
+    </nav>
+  </header>
+
+  <main class="table">
+    <section class="dealer-area">
+      <h2>Krupiye</h2>
+      <div id="dealer-cards" class="cards"></div>
+      <div id="dealer-total" class="hand-total">0</div>
+    </section>
+
+    <section class="player-area">
+      <h2>Oyuncu</h2>
+      <div id="player-cards" class="cards"></div>
+      <div id="player-total" class="hand-total">0</div>
+    </section>
+
+    <section class="controls">
+      <div class="chips">
+        <button class="chip" data-amt="10">₺10</button>
+        <button class="chip" data-amt="50">₺50</button>
+        <button class="chip" data-amt="100">₺100</button>
+        <input id="custom-bet" type="number" min="1" placeholder="Özel" />
+        <button id="btn-bet" class="primary">Bahis Koy</button>
+        <div class="balance">Bakiye: <span id="balance">₺1000</span></div>
+      </div>
+
+      <div class="side-bets">
+        <label><input type="checkbox" id="sb-pp"> Perfect Pairs</label>
+        <label><input type="checkbox" id="sb-213"> 21+3</label>
+        <input id="sb-amt" type="number" min="0" placeholder="Yan bahis ₺" />
+      </div>
+
+      <div class="play-buttons">
+        <button id="btn-deal" class="primary">Dağıt</button>
+        <button id="btn-hit" disabled>Hit</button>
+        <button id="btn-stand" disabled>Stand</button>
+        <button id="btn-double" disabled>Double</button>
+        <button id="btn-split" disabled>Split</button>
+        <button id="btn-surrender" disabled>Surrender</button>
+      </div>
+
+      <div id="advice" class="advice">🧠 Strateji: —</div>
+      <div id="status" class="status"></div>
+    </section>
+  </main>
+
+  <dialog id="dlg-settings">
+    <form method="dialog">
+      <h3>Kurallar & Kişiselleştirme</h3>
+      <fieldset>
+        <legend>Kurallar</legend>
+        <label><input type="checkbox" id="rule-h17" checked> Krupiye Soft 17’de çek (H17)</label>
+        <label>Desteler: <input type="number" id="rule-decks" min="1" max="8" value="6"></label>
+        <label>Blackjack Ödemesi:
+          <select id="rule-bjpayout">
+            <option value="1.5">3:2</option>
+            <option value="1.2">6:5</option>
+          </select>
+        </label>
+        <label><input type="checkbox" id="rule-surrender"> Surrender</label>
+        <label><input type="checkbox" id="rule-das" checked> Double after Split</label>
+      </fieldset>
+      <fieldset>
+        <legend>Yan Bahis Ayarları</legend>
+        <label>PP Mixed/Colored/Perfect: <input id="pp-payouts" value="5,10,25"></label>
+        <label>21+3 Flush/Straight/Trips/StraightFlush/SuitedTrips:
+          <input id="t213-payouts" value="5,10,30,40,100">
+        </label>
+      </fieldset>
+      <fieldset>
+        <legend>Görünüm & Ses</legend>
+        <label>Masa Rengi:
+          <select id="ui-table">
+            <option value="green">Yeşil</option>
+            <option value="blue">Mavi</option>
+            <option value="red">Kırmızı</option>
+            <option value="black">Siyah</option>
+          </select>
+        </label>
+        <label>Kart Stili:
+          <select id="ui-cards">
+            <option value="classic">Klasik</option>
+            <option value="flat">Flat</option>
+          </select>
+        </label>
+        <label>Avatar:
+          <select id="ui-avatar">
+            <option value="none">Yok</option>
+            <option value="lion">Aslan</option>
+            <option value="eagle">Kartal</option>
+          </select>
+        </label>
+        <label>Ses Seviyesi: <input type="range" id="audio-vol" min="0" max="1" step="0.01" value="0.35"></label>
+      </fieldset>
+
+      <menu>
+        <button value="cancel">İptal</button>
+        <button id="save-settings" value="default">Kaydet</button>
+      </menu>
+    </form>
+  </dialog>
+
+  <audio id="bgm" src="/static/audio/bgm.mp3" loop></audio>
+  <audio id="sfx-deal" src="/static/audio/sfx-deal.mp3"></audio>
+  <audio id="sfx-win" src="/static/audio/sfx-win.mp3"></audio>
+  <audio id="sfx-lose" src="/static/audio/sfx-lose.mp3"></audio>
+
+  <script src="/static/js/engine.js" defer></script>
+  <script src="/static/js/ui.js" defer></script>
+  <script src="/static/js/audio.js" defer></script>
+  <script src="/static/js/pwa.js" defer></script>
 </body>
 </html>

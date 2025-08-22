@@ -1,15 +1,27 @@
-body {
-    background-image: url('../images/table.jpg');
-    background-size: cover;
-    color: white;
-    font-family: Arial, sans-serif;
-    text-align: center;
-}
-#game {
-    margin-top: 50px;
-}
-button {
-    margin: 5px;
-    padding: 10px 20px;
-    font-size: 16px;
-}
+:root { --bg:#f9fbff; --fg:#0c1424; --muted:#51607a; --table:#2a8; --accent:#ff8c2b; }
+:root[data-theme="dark"] { --table:#0b7; --bg:#0b1020; --fg:#eaf1ff; --muted:#9db2ce; --accent:#ffd54a; }
+
+@media (prefers-reduced-motion: reduce){ *{animation: none !important; transition:none !important;} }
+
+body { margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto; background:var(--bg); color:var(--fg); }
+.topbar { display:flex; gap:12px; align-items:center; padding:10px 16px; border-bottom:1px solid #d9e2f1; }
+.brand { font-size:1.2rem; }
+.btn, button { background:#1b2538; color:#fff; border:0; padding:8px 12px; border-radius:8px; cursor:pointer; }
+.btn.primary, button.primary { background: linear-gradient(135deg, #7859f0, #2cb5e8); }
+
+.table { display:grid; grid-template-columns:1fr; gap:20px; padding:16px; max-width:980px; margin:0 auto; }
+.cards { display:flex; gap:12px; min-height:160px; perspective: 800px; }
+.card { width:100px; height:140px; border-radius:10px; background:#fff; background-image: var(--img); background-size:cover; box-shadow:0 8px 22px rgba(0,0,0,.18); transform: translateY(-20px) rotateX(6deg); transition: transform .2s ease; }
+.card.back { background-image: linear-gradient(120deg,#e6eef7,#cdd8ea); }
+.card.deal-in { animation: deal .22s ease-out; }
+@keyframes deal { from{ transform: translate(-120px,-80px) rotate(-12deg); opacity:0; } to{ transform: translateY(-20px) rotateX(6deg); opacity:1; } }
+
+.hand-total { font: 600 1.1rem/1.2 ui-sans-serif; color: var(--accent); margin-top:6px; }
+
+.chips, .play-buttons, .side-bets { display:flex; flex-wrap:wrap; gap:10px; align-items:center; }
+.balance { margin-left:auto; color:var(--muted); }
+
+.status { margin-top:10px; color:var(--muted); }
+.advice { margin-top:6px; color:#2f7ae5; }
+
+dialog { border:1px solid #cbd5e1; border-radius:10px; background:#ffffff; color:#111827; width:min(720px, 94vw); }

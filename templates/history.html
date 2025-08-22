@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>{{ app_name }} – Geçmiş</title>
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a href="/" class="btn">← Geri</a>
+    <h1>Oyun Geçmişi</h1>
+    <button id="btn-export" class="btn">JSON Dışa Aktar</button>
+  </header>
+  <main class="history">
+    <table id="tbl-history">
+      <thead><tr><th>Tarih</th><th>Bahis</th><th>Sonuç</th><th>Δ</th><th>Bakiye</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </main>
+  <script>
+    const rows = JSON.parse(localStorage.getItem("abj_history")||"[]");
+    const tb = document.querySelector("#tbl-history tbody");
+    rows.forEach(r=>{
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td>${new Date(r.t).toLocaleString()}</td>
+        <td>₺${r.bet}</td><td>${r.result}</td><td>${r.delta>=0?"+":"-"}₺${Math.abs(r.delta)}</td><td>₺${r.balance}</td>`;
+      tb.appendChild(tr);
+    });
+    document.getElementById("btn-export").addEventListener("click", ()=>{
+      const data = new Blob([JSON.stringify(rows, null, 2)], {type:'application/json'});
+      const a = document.createElement("a"); a.href = URL.createObjectURL(data); a.download = "altay-blackjack-history.json"; a.click();
+    });
+  </script>
+</body>
+</html>

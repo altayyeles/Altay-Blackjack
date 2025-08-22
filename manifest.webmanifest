@@ -1,0 +1,12 @@
+{
+  "name": "Altay BlackJack",
+  "short_name": "AltayBJ",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f9fbff",
+  "theme_color": "#f9fbff",
+  "icons": [
+    { "src": "/static/img/ui/icon-48.png", "sizes": "48x48", "type": "image/png" },
+    { "src": "/static/img/ui/icon-192.png", "sizes": "192x192", "type": "image/png" }
+  ]
+}
