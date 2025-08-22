@@ -53,12 +53,22 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_BDA13B5E446D4048B5186E6C20EE8692 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_070E449E9ECE44B9B9A244FB4229D8D3 }}
 
-      - name: Disable remote build (Oryx) for static deployment
+      - name: Configure App Service for static Node hosting
         run: |
+          az webapp config set \
+            --resource-group altay.yeles_rg_0996 \
+            --name altayblackjack \
+            --linux-fx-version "NODE|20-lts" \
+            --startup-file "pm2 serve /home/site/wwwroot 8080 --no-daemon --spa"
+
           az webapp config appsettings set \
             --resource-group altay.yeles_rg_0996 \
             --name altayblackjack \
-            --settings SCM_DO_BUILD_DURING_DEPLOYMENT=false
+            --settings WEBSITES_PORT=8080 SCM_DO_BUILD_DURING_DEPLOYMENT=false WEBSITE_RUN_FROM_PACKAGE=1
+
+          az webapp restart \
+            --resource-group altay.yeles_rg_0996 \
+            --name altayblackjack
 
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v3

@@ -1,0 +1,21 @@
+{
+  "name": "altay-blackjack",
+  "version": "1.0.0",
+  "description": "Javascript, HTML, CSS ve Bootstrap ile geliştirilmiş bir Blackjack oyunudur. Kullanıcı, 21'i geçmeden krupiyeyi yenmeye çalışır. Kullanıcı, bahis miktarını seçebilir, kart isteyebilir, pas geçebilir ve bahsi ikiye katlayabilir.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/altayyeles/Altay-Blackjack.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/altayyeles/Altay-Blackjack/issues"
+  },
+  "homepage": "https://github.com/altayyeles/Altay-Blackjack#readme"
+}
