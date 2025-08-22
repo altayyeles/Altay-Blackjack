@@ -1,29 +1,30 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Altay BlackJack</title>
-    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="../static/css/style.css">
 </head>
 <body>
-    <h1>Altay BlackJack 🎰</h1>
     <audio autoplay loop>
-        <source src="/static/sounds/casino.mp3" type="audio/mpeg">
+        <source src="../static/sounds/casino.mp3" type="audio/mpeg">
     </audio>
-    <div id="game-area">
-        <div id="player-hand" class="hand"></div>
-        <div id="dealer-hand" class="hand"></div>
+    <div id="game">
+        <h1>Altay BlackJack</h1>
+        <div id="table"></div>
         <div id="controls">
             <button onclick="hit()">Hit</button>
             <button onclick="stand()">Stand</button>
-            <div id="chips">
-                <button onclick="bet(10)">₺10</button>
-                <button onclick="bet(50)">₺50</button>
-                <button onclick="bet(100)">₺100</button>
-            </div>
+            <button onclick="resetGame()">New Game</button>
         </div>
+        <div id="chips">
+            <button onclick="bet(10)">₺10</button>
+            <button onclick="bet(50)">₺50</button>
+            <button onclick="bet(100)">₺100</button>
+        </div>
+        <div id="balance">Balance: ₺1000</div>
+        <div id="history"></div>
     </div>
-    <script src="/static/js/game.js"></script>
+    <script src="../static/js/game.js"></script>
 </body>
 </html>
