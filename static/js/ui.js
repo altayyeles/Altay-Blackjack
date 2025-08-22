@@ -5,22 +5,42 @@ const UI = (()=>{
   const overlay = document.getElementById("result-overlay");
   const titleEl = document.getElementById("result-title");
   const subEl   = document.getElementById("result-sub");
-document.addEventListener("DOMContentLoaded", ()=>{
-  document.querySelectorAll(".chip").forEach(btn=>{ btn.addEventListener("click", ()=>{ $("#custom-bet").value = btn.dataset.amt; }); });
-  $("#btn-bet").addEventListener("click", ()=>{});
-  $("#btn-deal").addEventListener("click", ()=>{ Game.state.sideBet = { pp: $("#sb-pp").checked, t213: $("#sb-213").checked, amt: getSideBetAmount() }; Game.deal(); });
-  $("#btn-hit").addEventListener("click", Game.hit);
-  $("#btn-stand").addEventListener("click", Game.stand);
-  $("#btn-double").addEventListener("click", Game.doubleDown);
-  $("#btn-surrender").addEventListener("click", Game.surrender);
-  $("#btn-settings").addEventListener("click", ()=> $("#dlg-settings").showModal());
-  $("#save-settings").addEventListener("click", ()=>{ /* ... */ });
-  $("#btn-theme").addEventListener("click", ()=>{ /* ... */ });
-  $("#btn-audio").addEventListener("click", ()=>{ Audio.toggle(); });
+  document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll(".chip").forEach(btn => {
+      btn.addEventListener("click", () => { $("#custom-bet").value = btn.dataset.amt; });
+    });
+    $("#btn-bet").addEventListener("click", () => {});
+    $("#btn-deal").addEventListener("click", () => {
+      Game.state.sideBet = { pp: $("#sb-pp").checked, t213: $("#sb-213").checked, amt: getSideBetAmount() };
+      Game.deal();
+    });
+    $("#btn-hit").addEventListener("click", Game.hit);
+    $("#btn-stand").addEventListener("click", Game.stand);
+    $("#btn-double").addEventListener("click", Game.doubleDown);
+    $("#btn-surrender").addEventListener("click", Game.surrender);
+    $("#btn-settings").addEventListener("click", () => $("#dlg-settings").showModal());
+    $("#save-settings").addEventListener("click", () => { /* ... */ });
+    $("#btn-theme").addEventListener("click", () => { /* ... */ });
+    $("#btn-audio").addEventListener("click", () => { Audio.toggle(); });
 
-  // Buraya ekleyin:
-  document.getElementById("result-close").addEventListener("click", ()=> overlay.classList.add("hidden"));
-});
+    // 🔽 BURADA overlay’i tanımlıyoruz:
+    const overlay = document.getElementById("result-overlay");
+    const btnClose = document.getElementById("result-close");
+
+    // Kapat butonu
+    btnClose?.addEventListener("click", () => overlay?.classList.add("hidden"));
+
+    // (Opsiyonel) Overlay’in boş alanına tıklayınca kapat
+    overlay?.addEventListener("click", (e) => {
+      if (e.target === overlay) overlay.classList.add("hidden");
+    });
+
+    // (Opsiyonel) ESC ile kapat
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") overlay?.classList.add("hidden");
+    });
+  });
+
 
 
   function clearHands(){ dealerEl.innerHTML=""; playerEl.innerHTML=""; $("#status").textContent=""; updateBet(0); }
