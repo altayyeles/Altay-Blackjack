@@ -1,23 +1,24 @@
 const API_BASE = "https://www.deckofcardsapi.com/api/deck";
 // --- Yardımcı: API kartını sayısal 'points' ile normalize et ---
+// API kartını güvenle normalize et (points sayısal)
 function pointsFromApiValue(v) {
-  // v örn: "ACE", "KING", "QUEEN", "JACK", "10", "7"
-  if (!v) return 0;
-  const s = String(v).toUpperCase();
+  const s = String(v || "").toUpperCase();
   if (s === "ACE") return 11;
   if (s === "KING" || s === "QUEEN" || s === "JACK") return 10;
   const n = parseInt(s, 10);
-  return isNaN(n) ? 0 : n;
+  return Number.isFinite(n) ? n : 0;
 }
-function normalizeApiCard(card){
-  // card.code örn "AS", "0H" (10=0), "KD"
+
+
+function normalizeApiCard(card) {
   return {
-    code: card.code,
-    suit: card.suit,
-    img:  card.image,
-    points: pointsFromApiValue(card.value)   // <-- kritik
+    code: card?.code || "??",
+    suit: card?.suit || "",
+    img:  card?.image || "",
+    points: pointsFromApiValue(card?.value)
   };
 }
+// --- Yardımcı: Yerel deste oluştur (points sayısal) ---
 
 // Local deste üretirken de 'points' kullanalım
 function buildLocalShoe(decks=6) {
@@ -37,11 +38,13 @@ function buildLocalShoe(decks=6) {
   return shoe;
 }
 
+
+// Lokal deste zaten points ile geliyor; handTotal yalnızca points toplar
 function handTotal(cards) {
-  // Sadece 'points' ile topla; As (11) esnek 1'e düşer
-  let total = cards.reduce((t, c) => t + (c.points || 0), 0);
-  let aces = cards.filter(c => c.code[0] === "A").length;
-  while (total > 21 && aces > 0) { total -= 10; aces--; }
+  const safe = (cards || []).filter(Boolean);
+  let total = safe.reduce((t, c) => t + (Number(c.points) || 0), 0);
+  let aces = safe.filter(c => (c.code || "")[0] === "A").length;
+  while (total > 21 && aces > 0) { total -= 10; aces--; } // A=1’e düşür
   return total;
 }
 
@@ -145,13 +148,44 @@ function evaluate21plus3(cards,[pFlush,pStraight,pTrips,pSF,pSuitedTrips]){ cons
   const isStraight=(toIdx(sorted[2])-toIdx(sorted[0])===2) && new Set(sorted).size===3;
   if(isTrips && allSameSuit) return pSuitedTrips; if(allSameSuit && isStraight) return pSF; if(isTrips) return pTrips; if(isStraight) return pStraight; if(allSameSuit) return pFlush; return 0; }
 
-async function hit(){ const c=(await draw(1))[0]; state.hands.player.push(c); UI.animateDeal("player", c); Audio.play("deal"); const t=handTotal(state.hands.player); UI.updateTotals(t, handTotal([state.hands.dealer[0]])); UI.setAdvice(basicStrategyAdvice(state,false)); if(t>21) return endRound(); }
+let actionLock = false;
+async function hit() {
+  if (actionLock) return;
+  actionLock = true;
+  try {
+    const c = (await draw(1))[0];
+    if (!c) return; // güvenlik
+    state.hands.player.push(c);
+    UI.animateDeal("player", c);
+    Audio.play("deal");
+    const t = handTotal(state.hands.player);
+    UI.updateTotals(t, handTotal([state.hands.dealer[0]]));
+    UI.setAdvice(basicStrategyAdvice(state, false));
+    if (t > 21) return endRound();
+  } finally {
+    actionLock = false;
+  }
+}
+
 function stand(){ dealerPlay(); }
 async function doubleDown(){ if(state.balance<state.bet) return; state.balance -= state.bet; state.bet *= 2; UI.updateBalance(state.balance); UI.updateBet(state.bet); await hit(); if(handTotal(state.hands.player)<=21) dealerPlay(); }
 function canSplit(){ const [a,b]=state.hands.player; return a && b && a.code[0]===b.code[0]; }
 function surrender(){ state.balance += Math.floor(state.bet/2); endRound(true, { surrender:true }); }
 
-async function dealerPlay(){ UI.revealDealerHole(); let total = handTotal(state.hands.dealer); while(total<17 || (total===17 && state.rules.h17 && isSoft(state.hands.dealer))){ const c=(await draw(1))[0]; state.hands.dealer.push(c); UI.animateDeal("dealer", c); total = handTotal(state.hands.dealer); } endRound(); }
+
+async function dealerPlay(){
+  UI.revealDealerHole();
+  let total = handTotal(state.hands.dealer);
+  while (total < 17 || (total === 17 && state.rules.h17 && isSoft(state.hands.dealer))) {
+    const c = (await draw(1))[0];
+    if (!c) break;
+    state.hands.dealer.push(c);
+    UI.animateDeal("dealer", c);
+    total = handTotal(state.hands.dealer);
+  }
+  endRound();
+}
+
 
 function endRound(naturalCheck=false, extra={}){
   UI.lockActions(true);

@@ -82,6 +82,14 @@ const UI = (()=>{
     $("#btn-double").addEventListener("click", Game.doubleDown);
     $("#btn-surrender").addEventListener("click", Game.surrender);
     $("#btn-settings").addEventListener("click", ()=> $("#dlg-settings").showModal());
+    $("#btn-hit").addEventListener("click", async () => {
+      const btn = $("#btn-hit");
+      if (btn.disabled) return;
+      btn.disabled = true;
+      try { await Game.hit(); }
+      finally { if (!btn.classList.contains("locked")) btn.disabled = false; }
+    });
+
     $("#save-settings").addEventListener("click", ()=>{
       Game.state.rules.h17 = $("#rule-h17").checked;
       Game.state.rules.decks = parseInt($("#rule-decks").value,10) || 6;
