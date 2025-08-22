@@ -19,17 +19,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-  # Optional: Add step to run tests/lint for static assets here
-
-    - name: Upload artifact for deployment jobs
+      # Optional: Add step to run tests/lint for static assets here
+      - name: Upload artifact for deployment jobs
         uses: actions/upload-artifact@v4
         with:
-      name: static-site
+          name: static-site
           path: |
             .
             !venv/
-    !.git/
-    !.github/
+            !.git/
+            !.github/
 
   deploy:
     runs-on: ubuntu-latest
@@ -57,5 +56,5 @@ jobs:
         with:
           app-name: 'altayblackjack'
           slot-name: 'Production'
-          package: '.'
+          package: 'static-site'
           
