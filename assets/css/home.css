@@ -119,7 +119,8 @@ main {
 }
 
 .menu-btn,
-.help-btn {
+.help-btn,
+.music-btn {
   background-color: var(--color-light);
   border-radius: 50%;
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.5);
@@ -148,6 +149,11 @@ main {
 .help-btn {
   padding: 6px 10px;
   top: 94px;
+}
+
+/* Music button sits below the language switcher */
+.music-btn {
+  top: 186px; /* language is at 144px; + ~40px icon height */
 }
 
 .languaje-change-btn {
@@ -192,6 +198,7 @@ main {
 
 .menu-btn.hidden,
 .help-btn.hidden,
+.music-btn.hidden,
 .languaje-change-btn.hidden {
   transform: scale(0);
   opacity: 0;
