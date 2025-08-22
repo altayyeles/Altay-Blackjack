@@ -1,4 +1,5 @@
 import "./home.js";
+import "./music.js";
 import * as underscore from "./underscore-min.js";
 import { alertMessage, alertLose } from "./alerts.js";
 import { statisticsCounter, saveStatistics } from "./game-statistics.js";

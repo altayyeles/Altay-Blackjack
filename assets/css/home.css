@@ -176,6 +176,11 @@ main {
   opacity: 0;
 }
 
+#btn-turkish.hidden {
+  transform: scale(0);
+  opacity: 0;
+}
+
 #btn-english.hidden {
   transform: scale(0);
   opacity: 0;

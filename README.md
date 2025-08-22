@@ -58,3 +58,4 @@ Kullanıcı, bahis miktarını seçebilir, kart isteyebilir, pas geçebilir ve b
 ---
 
 ## [Siteye Git](https://altayblackjack.azurewebsites.net/)
+
