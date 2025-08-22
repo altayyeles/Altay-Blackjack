@@ -91,7 +91,7 @@ const UI = (()=>{
       Game.state.payouts.perfectPairs = ($("#pp-payouts").value || "5,10,25").split(",").map(x=>parseInt(x,10));
       Game.state.payouts.t213 = ($("#t213-payouts").value || "5,10,30,40,100").split(",").map(x=>parseInt(x,10));
     });
-    $("#btn-theme").addEventListener("click", ()=>{ const root=document.documentElement; const cur=root.getAttribute("data-theme")||"light"; root.setAttribute("data-theme", cur==="dark"?"light":"dark"); });
+    $("#btn-theme").addEventListener("click", ()=>{ const root=document.documentElement; const cur=root.getAttribute("data-theme")||"dark"; root.setAttribute("data-theme", cur==="light"?"dark":"light"); });
     $("#btn-audio").addEventListener("click", ()=>{ Audio.toggle(); });
   });
 

@@ -1,14 +1,14 @@
 /* =========================================================
    Altay BlackJack - style.css
-   Varsayılan tema: LIGHT, DARK opsiyonel (data-theme="dark")
+   Varsayılan tema: DARK, LIGHT opsiyonel (data-theme="light")
    - Yeşil "felt" masa görünümü
    - Modern, responsive UI (mobil/desktop)
    - Erişilebilirlik: focus-visible, reduced motion
    ========================================================= */
 
 /* -------------------- Temel Değişkenler -------------------- */
-:root {
-  /* Light (DEFAULT) */
+:root [data-theme="light"] {
+  /* Light (OPTIONAL) */
   --bg: #f9fbff;
   --fg: #0c1424;
   --muted: #51607a;
@@ -28,7 +28,7 @@
   --ring: #5b9cff;
 }
 
-:root[data-theme="dark"] {
+:root {
   --bg: #0b1020;
   --fg: #eaf1ff;
   --muted: #9db2ce;
