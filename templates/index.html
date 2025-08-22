@@ -120,6 +120,15 @@
     </form>
   </dialog>
 
+  <!-- Sonuç overlay (Kazandın/Kaybettin) -->
+<div id="result-overlay" class="result-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="result-title" aria-describedby="result-sub">
+  <div class="result-box">
+    <div id="result-title">Kazandın!</div>
+    <div id="result-sub"></div>
+    <button id="result-close" class="btn" type="button" aria-label="Kapat">Tamam</button>
+  </div>
+</div>
+
   <audio id="bgm" src="/static/audio/bgm.mp3" loop></audio>
   <audio id="sfx-deal" src="/static/audio/sfx-deal.mp3"></audio>
   <audio id="sfx-win" src="/static/audio/sfx-win.mp3"></audio>

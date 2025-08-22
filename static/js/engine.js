@@ -1,4 +1,49 @@
 const API_BASE = "https://www.deckofcardsapi.com/api/deck";
+// --- Yardımcı: API kartını sayısal 'points' ile normalize et ---
+function pointsFromApiValue(v) {
+  // v örn: "ACE", "KING", "QUEEN", "JACK", "10", "7"
+  if (!v) return 0;
+  const s = String(v).toUpperCase();
+  if (s === "ACE") return 11;
+  if (s === "KING" || s === "QUEEN" || s === "JACK") return 10;
+  const n = parseInt(s, 10);
+  return isNaN(n) ? 0 : n;
+}
+function normalizeApiCard(card){
+  // card.code örn "AS", "0H" (10=0), "KD"
+  return {
+    code: card.code,
+    suit: card.suit,
+    img:  card.image,
+    points: pointsFromApiValue(card.value)   // <-- kritik
+  };
+}
+
+// Local deste üretirken de 'points' kullanalım
+function buildLocalShoe(decks=6) {
+  const suits = ["S","H","D","C"];
+  const ranks = ["A","2","3","4","5","6","7","8","9","0","J","Q","K"]; // 10 = '0'
+  const shoe = [];
+  for (let d=0; d<decks; d++) {
+    for (const s of suits) for (const r of ranks) {
+      shoe.push({
+        code: r + s,
+        suit: suitName(s),
+        img:  `https://deckofcardsapi.com/static/img/${r}${s}.png`,
+        points: rankValue(r)                 // <-- numeric
+      });
+    }
+  }
+  return shoe;
+}
+
+function handTotal(cards) {
+  // Sadece 'points' ile topla; As (11) esnek 1'e düşer
+  let total = cards.reduce((t, c) => t + (c.points || 0), 0);
+  let aces = cards.filter(c => c.code[0] === "A").length;
+  while (total > 21 && aces > 0) { total -= 10; aces--; }
+  return total;
+}
 
 let state = {
   deckId: null,
@@ -31,19 +76,25 @@ async function newShoe(){
   }catch(e){ state.useApi = false; state.shoe = buildLocalShoe(state.rules.decks); shuffle(state.shoe); }
 }
 
-async function draw(count=1){
-  if(state.useApi && state.deckId){
-    try{
-      const res = await fetch(`${API_BASE}/${state.deckId}/draw/?count=${count}`, {cache:"no-store"});
+async function draw(count = 1) {
+  if (state.useApi && state.deckId) {
+    try {
+      const res = await fetch(`${API_BASE}/${state.deckId}/draw/?count=${count}`, { cache: "no-store" });
       const data = await res.json();
-      if(data.success){
-        return data.cards.map(card=>({ code:card.code, value:card.value, suit:card.suit, img:card.image }));
+      if (data.success) {
+        return data.cards.map(normalizeApiCard);  // <-- kritik
       }
-    }catch(e){ state.useApi = false; }
+    } catch (e) { state.useApi = false; }
   }
-  const out=[]; for(let i=0;i<count;i++){ if(!state.shoe.length){ state.shoe=buildLocalShoe(state.rules.decks); shuffle(state.shoe);} out.push(state.shoe.pop()); }
+  // Offline çekim (zaten 'points' var)
+  const out = [];
+  for (let i=0; i<count; i++) {
+    if (!state.shoe.length) { state.shoe = buildLocalShoe(state.rules.decks); shuffle(state.shoe); }
+    out.push(state.shoe.pop());
+  }
   return out;
 }
+
 
 function buildLocalShoe(decks=6){
   const suits=["S","H","D","C"]; const ranks=["A","2","3","4","5","6","7","8","9","0","J","Q","K"]; const shoe=[];
@@ -114,11 +165,22 @@ function endRound(naturalCheck=false, extra={}){
   else if(dt>21){ outcome="dealer-bust"; delta=state.bet; }
   else if(pt>dt){ outcome="player-win"; delta=state.bet; }
   else if(pt<dt){ outcome="dealer-win"; delta=-state.bet; }
-  state.balance += delta; UI.updateBalance(state.balance); Storage.save(); if(delta>0) Audio.play("win"); else if(delta<0) Audio.play("lose");
+  state.balance += delta;
+  UI.updateBalance(state.balance);
+  Storage.save();
+
+  if (delta>0) Audio.play("win"); else if (delta<0) Audio.play("lose");
   UI.setStatus(`Sonuç: ${outcome} (${pt} vs ${dt}) ${delta>=0?"+":"-"}₺${Math.abs(delta)}`);
-  Storage.pushHistory({ t:new Date().toISOString(), bet:state.bet, side:state.sideBet, player:state.hands.player, dealer:state.hands.dealer, result:outcome, delta, balance:state.balance, rules:state.rules });
-  UI.afterRound(); UI.setAdvice("—");
+
+  // --- YENİ: şık sonuç overlay'i ---
+  UI.showResult(outcome, delta, pt, dt);
+
+  Storage.pushHistory({ /* aynı */ });
+  UI.afterRound();
+  UI.setAdvice("—");
+
 }
+
 
 function basicStrategyAdvice(state){ const pt=handTotal(state.hands.player); const up=state.hands.dealer[0]; const upVal=up?rankValue(up.code[0]):10; if(pt<=11) return "Double (mümkünse), değilse Hit"; if(pt===12 && upVal>=4 && upVal<=6) return "Stand"; if(pt>=13 && pt<=16 && upVal<=6) return "Stand"; if(pt>=17) return "Stand"; return "Hit"; }
 

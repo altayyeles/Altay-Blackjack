@@ -91,6 +91,7 @@ img, svg, video { display: block; max-width: 100%; }
 }
 
 /* -------------------- Butonlar & Link Butonlar -------------------- */
+
 button, .btn, input[type="button"], input[type="submit"] {
   appearance: none;
   border: 0;
@@ -102,6 +103,8 @@ button, .btn, input[type="button"], input[type="submit"] {
   line-height: 1.1;
   transition: transform .08s ease, box-shadow .12s ease, background .2s ease;
 }
+button:active, .btn:active { transform: translateY(1px) scale(0.99); }
+button:disabled { opacity: .55; cursor: not-allowed; }
 
 .btn.primary, button.primary {
   background: linear-gradient(135deg, var(--btn-primary-start), var(--btn-primary-end));
@@ -291,3 +294,33 @@ tbody tr:nth-child(even) { background: rgba(255,255,255,.35); }
 a.btn { text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
 a.btn:hover, button:hover { filter: brightness(1.04); }
 a.btn:active { transform: translateY(1px) scale(0.98); }
+
+/* ---- Sonuç overlay ---- */
+.result-overlay {
+  position: fixed; inset: 0; display: grid; place-items: center;
+  background: radial-gradient(ellipse at center, rgba(0,0,0,.55), rgba(0,0,0,.75));
+  z-index: 999;
+}
+.result-overlay.hidden { display: none; }
+
+.result-box {
+  width: min(92vw, 540px);
+  background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+  border: 1px solid rgba(255,255,255,.16);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 24px;
+  text-align: center;
+  box-shadow: 0 18px 50px rgba(0,0,0,.45);
+  transform: scale(.94);
+  animation: pop .18s ease-out forwards;
+}
+@keyframes pop { to { transform: scale(1); } }
+
+#result-title {
+  font-size: clamp(28px, 6vw, 40px);
+  font-weight: 800;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+#result-sub { color: var(--muted); margin-bottom: 14px; }
